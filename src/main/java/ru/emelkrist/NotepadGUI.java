@@ -12,6 +12,7 @@ public class NotepadGUI extends JFrame {
     // file explorer
     private JFileChooser fileChooser;
     private JTextArea textArea;
+    private File currentFile;
 
     public NotepadGUI() {
         super("Notepad");
@@ -96,6 +97,13 @@ public class NotepadGUI extends JFrame {
 
         // "save" functionality - saves text into current text file
         JMenuItem saveMenuItem = new JMenuItem("Save");
+        saveMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // todo горячую клавишу для сохранения
+                saveFile();
+            }
+        });
         fileMenu.add(saveMenuItem);
 
         // "exit" functionality - ends programs process
@@ -103,6 +111,30 @@ public class NotepadGUI extends JFrame {
         fileMenu.add(exitMenuItem);
 
         return fileMenu;
+    }
+
+    /**
+     * Method to save current file.
+     */
+    private boolean saveFile() {
+        // if the current file is null then we have to perform save as functionality
+        if (currentFile == null) {
+            saveFileAs();
+            return true;
+        }
+
+        try {
+            // write to current file
+            FileWriter fileWriter = new FileWriter(currentFile);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(textArea.getText());
+            bufferedWriter.close();
+            fileWriter.close();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**
@@ -130,6 +162,8 @@ public class NotepadGUI extends JFrame {
             textArea.setText(fileText.toString());
             // update title header
             setTitle(selectedFile.getName());
+            // update current file
+            currentFile = selectedFile;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -149,7 +183,7 @@ public class NotepadGUI extends JFrame {
             switch (confirmationResult) {
                 case JOptionPane.YES_OPTION -> {
                     // if "yes" was selected, the creation is confirmed, but only if the save is successful
-                    create = saveFileAs();
+                    create = saveFile();
                     break;
                 }
                 case JOptionPane.NO_OPTION -> {
@@ -169,6 +203,8 @@ public class NotepadGUI extends JFrame {
             setTitle("Notepad");
             // reset text area
             textArea.setText("");
+            // reset current file
+            currentFile = null;
         }
         return create;
     }
@@ -199,6 +235,8 @@ public class NotepadGUI extends JFrame {
                 fileWriter.close();
                 // update the title header of gui to save text file
                 setTitle(fileName);
+                // update current file
+                currentFile = selectedFile;
                 return true;
             }
         } catch (Exception e) {
