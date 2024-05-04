@@ -63,6 +63,12 @@ public class NotepadGUI extends JFrame {
 
         // "new" functionality - resets everything
         JMenuItem newMenuItem = new JMenuItem("New");
+        newMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createNewFile();
+            }
+        });
         fileMenu.add(newMenuItem);
 
         // "open" functionality - open a text file
@@ -91,31 +97,71 @@ public class NotepadGUI extends JFrame {
     }
 
     /**
-     * Method for saving a file with a specific extension.
+     * Method for creating a new file.
+     * Note: contains confirmation of saving the current file
      */
-    private void saveFileAs() {
+    private void createNewFile() {
+        // if "exit" or "cancel" was selected, the creation isn't confirmed
+        boolean create = false;
+        // saving confirmation message if textarea is not blank
+        if (!textArea.getText().isBlank()) {
+            int confirmationResult = JOptionPane.showConfirmDialog(NotepadGUI.this, "Do you want to save?", "Confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
+
+            switch (confirmationResult) {
+                case JOptionPane.YES_OPTION -> {
+                    // if "yes" was selected, the creation is confirmed, but only if the save is successful
+                    create = saveFileAs();
+                    break;
+                }
+                case JOptionPane.NO_OPTION -> {
+                    // if "no" was selected, the creation is confirmed, but without saving
+                    create = true;
+                    break;
+                }
+            }
+        }
+
+        // if creation is confirmed
+        if (create) {
+            // reset title header
+            setTitle("Notepad");
+            // reset text area
+            textArea.setText("");
+        }
+    }
+
+    /**
+     * Method for saving a file with a specific extension.
+     *
+     * @return the saving process is successful of not
+     */
+    private boolean saveFileAs() {
         // open save dialog
         fileChooser.showSaveDialog(NotepadGUI.this);
         try {
             File selectedFile = fileChooser.getSelectedFile();
-            // append txt to the file if it does not have the txt extension yet
-            String fileName = selectedFile.getName();
-            if (!fileName.substring(fileName.length() - 4).equalsIgnoreCase(".txt")) {
-                selectedFile = new File(selectedFile.getAbsolutePath() + ".txt");
+            if (selectedFile != null) {
+                // append txt to the file if it does not have the txt extension yet
+                String fileName = selectedFile.getName();
+                if (!fileName.substring(fileName.length() - 4).equalsIgnoreCase(".txt")) {
+                    selectedFile = new File(selectedFile.getAbsolutePath() + ".txt");
+                }
+                // create new file
+                selectedFile.createNewFile();
+                // write the user's text into the file that we just created
+                FileWriter fileWriter = new FileWriter(selectedFile);
+                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+                bufferedWriter.write(textArea.getText());
+                bufferedWriter.close();
+                fileWriter.close();
+                // update the title header of gui to save text file
+                setTitle(fileName);
+                return true;
             }
-            // create new file
-            selectedFile.createNewFile();
-            // write the user's text into the file that we just created
-            FileWriter fileWriter = new FileWriter(selectedFile);
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(textArea.getText());
-            bufferedWriter.close();
-            fileWriter.close();
-            // update the title header of gui to save text file
-            setTitle(fileName);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
     }
 
 
