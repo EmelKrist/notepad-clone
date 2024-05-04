@@ -5,9 +5,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+import java.io.*;
+import java.nio.channels.FileChannel;
 
 public class NotepadGUI extends JFrame {
     // file explorer
@@ -73,6 +72,16 @@ public class NotepadGUI extends JFrame {
 
         // "open" functionality - open a text file
         JMenuItem openMenuItem = new JMenuItem("Open");
+        openMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // reset notepad
+                boolean reset = createNewFile();
+                if (reset) {
+                    openFile();
+                }
+            }
+        });
         fileMenu.add(openMenuItem);
 
         // "save as" functionality - creates a new text file and saves text
@@ -97,14 +106,44 @@ public class NotepadGUI extends JFrame {
     }
 
     /**
+     * Method to open a file.
+     */
+    private void openFile() {
+        try {
+            // open file explorer
+            int result = fileChooser.showOpenDialog(NotepadGUI.this);
+            if (result != JFileChooser.APPROVE_OPTION) return;
+            // get the selected file
+            File selectedFile = fileChooser.getSelectedFile();
+            // read the file
+            FileReader fileReader = new FileReader(selectedFile);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+            // store the text
+            StringBuilder fileText = new StringBuilder();
+            String readText;
+            while ((readText = bufferedReader.readLine()) != null) {
+                fileText.append(readText).append("\n");
+            }
+            bufferedReader.close();
+            fileReader.close();
+            // update textarea
+            textArea.setText(fileText.toString());
+            // update title header
+            setTitle(selectedFile.getName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Method for creating a new file.
      * Note: contains confirmation of saving the current file
      */
-    private void createNewFile() {
+    private boolean createNewFile() {
         // if "exit" or "cancel" was selected, the creation isn't confirmed
         boolean create = false;
-        // saving confirmation message if textarea is not blank
-        if (!textArea.getText().isBlank()) {
+        // saving confirmation message if textarea is not blank and there is no Notepad title in the frame
+        if (!textArea.getText().isBlank() || !getTitle().equals("Notepad")) {
             int confirmationResult = JOptionPane.showConfirmDialog(NotepadGUI.this, "Do you want to save?", "Confirmation", JOptionPane.YES_NO_CANCEL_OPTION);
 
             switch (confirmationResult) {
@@ -119,6 +158,9 @@ public class NotepadGUI extends JFrame {
                     break;
                 }
             }
+        } else {
+            // reset if textarea is blank and not a file
+            create = true;
         }
 
         // if creation is confirmed
@@ -128,6 +170,7 @@ public class NotepadGUI extends JFrame {
             // reset text area
             textArea.setText("");
         }
+        return create;
     }
 
     /**
