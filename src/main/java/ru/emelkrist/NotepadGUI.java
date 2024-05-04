@@ -108,6 +108,13 @@ public class NotepadGUI extends JFrame {
 
         // "exit" functionality - ends programs process
         JMenuItem exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // dispose of this GUI
+                NotepadGUI.this.dispose();
+            }
+        });
         fileMenu.add(exitMenuItem);
 
         return fileMenu;
