@@ -76,11 +76,7 @@ public class NotepadGUI extends JFrame {
         openMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // reset notepad
-                boolean reset = createNewFile();
-                if (reset) {
-                    openFile();
-                }
+                openFile();
             }
         });
         fileMenu.add(openMenuItem);
@@ -126,8 +122,7 @@ public class NotepadGUI extends JFrame {
     private boolean saveFile() {
         // if the current file is null then we have to perform save as functionality
         if (currentFile == null) {
-            saveFileAs();
-            return true;
+            return saveFileAs();
         }
 
         try {
@@ -152,6 +147,9 @@ public class NotepadGUI extends JFrame {
             // open file explorer
             int result = fileChooser.showOpenDialog(NotepadGUI.this);
             if (result != JFileChooser.APPROVE_OPTION) return;
+            // reset notepad
+            boolean reset = createNewFile();
+            if (!reset) return;
             // get the selected file
             File selectedFile = fileChooser.getSelectedFile();
             // read the file
@@ -223,29 +221,28 @@ public class NotepadGUI extends JFrame {
      */
     private boolean saveFileAs() {
         // open save dialog
-        fileChooser.showSaveDialog(NotepadGUI.this);
+        int result = fileChooser.showSaveDialog(NotepadGUI.this);
+        if (result != JFileChooser.APPROVE_OPTION) return false;
         try {
             File selectedFile = fileChooser.getSelectedFile();
-            if (selectedFile != null) {
-                // append txt to the file if it does not have the txt extension yet
-                String fileName = selectedFile.getName();
-                if (!fileName.substring(fileName.length() - 4).equalsIgnoreCase(".txt")) {
-                    selectedFile = new File(selectedFile.getAbsolutePath() + ".txt");
-                }
-                // create new file
-                selectedFile.createNewFile();
-                // write the user's text into the file that we just created
-                FileWriter fileWriter = new FileWriter(selectedFile);
-                BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-                bufferedWriter.write(textArea.getText());
-                bufferedWriter.close();
-                fileWriter.close();
-                // update the title header of gui to save text file
-                setTitle(fileName);
-                // update current file
-                currentFile = selectedFile;
-                return true;
+            // append txt to the file if it does not have the txt extension yet
+            String fileName = selectedFile.getName();
+            if (!fileName.substring(fileName.length() - 4).equalsIgnoreCase(".txt")) {
+                selectedFile = new File(selectedFile.getAbsolutePath() + ".txt");
             }
+            // create new file
+            selectedFile.createNewFile();
+            // write the user's text into the file that we just created
+            FileWriter fileWriter = new FileWriter(selectedFile);
+            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
+            bufferedWriter.write(textArea.getText());
+            bufferedWriter.close();
+            fileWriter.close();
+            // update the title header of gui to save text file
+            setTitle(fileName);
+            // update current file
+            currentFile = selectedFile;
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
         }
