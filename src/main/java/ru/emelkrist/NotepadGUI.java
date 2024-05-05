@@ -61,7 +61,46 @@ public class NotepadGUI extends JFrame {
         // add menus
         menuBar.add(addFileMenu());
         menuBar.add(addEditMenu());
+        menuBar.add(addFormatMenu());
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    /**
+     * Method that adds a "Format" menu in the toolbar
+     * with basic functionality items.
+     *
+     * @return toolbar menu
+     */
+    private JMenu addFormatMenu() {
+        JMenu formatMenu = new JMenu("Format");
+
+        // wrap word functionality
+        JCheckBoxMenuItem wordWrapMenuItem = new JCheckBoxMenuItem("Word wrap");
+        wordWrapMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                boolean isChecked = wordWrapMenuItem.getState();
+                if (isChecked) {
+                    // wrap words
+                    textArea.setLineWrap(true);
+                    textArea.setWrapStyleWord(true);
+                } else {
+                    textArea.setLineWrap(false);
+                    textArea.setWrapStyleWord(false);
+                }
+            }
+        });
+        formatMenu.add(wordWrapMenuItem);
+
+        // aligning text
+        JMenu alignTextMenu = new JMenu("Align Text");
+        formatMenu.add(alignTextMenu);
+
+        // font format
+        JMenuItem fontMenuItem = new JMenuItem("Font...");
+        formatMenu.add(fontMenuItem);
+
+        return formatMenu;
     }
 
     /**
