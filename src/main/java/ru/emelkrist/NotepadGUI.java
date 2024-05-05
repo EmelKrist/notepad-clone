@@ -46,7 +46,8 @@ public class NotepadGUI extends JFrame {
                 undoManager.addEdit(e.getEdit());
             }
         });
-        add(textArea, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     /**
