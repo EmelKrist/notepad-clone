@@ -1,7 +1,10 @@
 package ru.emelkrist;
 
 import javax.swing.*;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,17 +16,19 @@ public class NotepadGUI extends JFrame {
     private JFileChooser fileChooser;
     private JTextArea textArea;
     private File currentFile;
+    // swing's build to manage undo and redo functionality
+    private UndoManager undoManager;
 
     public NotepadGUI() {
         super("Notepad");
         setSize(400, 500);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-
         // file chooser setup
         fileChooser = new JFileChooser();
         fileChooser.setFileFilter(new FileNameExtensionFilter("Text Files", "txt"));
-
+        // undo manager setup
+        undoManager = new UndoManager();
         addGuiComponents();
     }
 
@@ -32,9 +37,15 @@ public class NotepadGUI extends JFrame {
      */
     private void addGuiComponents() {
         addToolBar();
-
         // area to type text into
         textArea = new JTextArea();
+        textArea.getDocument().addUndoableEditListener(new UndoableEditListener() {
+            @Override
+            public void undoableEditHappened(UndoableEditEvent e) {
+                // adds each edit that we do in the text area (either adding or removing text)
+                undoManager.addEdit(e.getEdit());
+            }
+        });
         add(textArea, BorderLayout.CENTER);
     }
 
@@ -49,7 +60,46 @@ public class NotepadGUI extends JFrame {
         toolBar.add(menuBar);
         // add menus
         menuBar.add(addFileMenu());
+        menuBar.add(addEditMenu());
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    /**
+     * Method that adds a "Edit" menu in the toolbar
+     * with basic functionality items.
+     *
+     * @return toolbar menu
+     */
+    private JMenu addEditMenu() {
+        JMenu editMenu = new JMenu("Edit");
+
+        // "undo" functionality - deletes the last text
+        JMenuItem undoMenuItem = new JMenuItem("Undo");
+        undoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // if there are any edits that we can undo, then we undo them
+                if (undoManager.canUndo()) {
+                    undoManager.undo();
+                }
+            }
+        });
+        editMenu.add(undoMenuItem);
+
+        // "redo" functionality - returns the last deleted text
+        JMenuItem redoMenuItem = new JMenuItem("Redo");
+        redoMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // if there are any edits that we can redo, then we redo them
+                if (undoManager.canRedo()) {
+                    undoManager.redo();
+                }
+            }
+        });
+        editMenu.add(redoMenuItem);
+
+        return editMenu;
     }
 
     /**
