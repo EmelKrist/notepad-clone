@@ -100,6 +100,17 @@ public class NotepadGUI extends JFrame {
 
         // zoom out functionality
         JMenuItem zoomOutMenuItem = new JMenuItem("Zoom out");
+        zoomOutMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFont = textArea.getFont();
+                textArea.setFont(new Font(
+                        currentFont.getName(),
+                        currentFont.getStyle(),
+                        currentFont.getSize() - 1
+                ));
+            }
+        });
         zoomMenu.add(zoomOutMenuItem);
 
         // restore default zoom
