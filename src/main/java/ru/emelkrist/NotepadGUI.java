@@ -82,12 +82,26 @@ public class NotepadGUI extends JFrame {
         JMenu viewMenu = new JMenu("View");
 
         JMenu zoomMenu = new JMenu("Zoom");
+
         // zoom in functionality
         JMenuItem zoomInMenuItem = new JMenuItem("Zoom in");
+        zoomInMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Font currentFont = textArea.getFont();
+                textArea.setFont(new Font(
+                        currentFont.getName(),
+                        currentFont.getStyle(),
+                        currentFont.getSize() + 1
+                ));
+            }
+        });
         zoomMenu.add(zoomInMenuItem);
+
         // zoom out functionality
         JMenuItem zoomOutMenuItem = new JMenuItem("Zoom out");
         zoomMenu.add(zoomOutMenuItem);
+
         // restore default zoom
         JMenuItem zoomRestoreMenuItem = new JMenuItem("Restore Default Zoom");
         zoomMenu.add(zoomRestoreMenuItem);
