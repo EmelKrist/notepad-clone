@@ -15,6 +15,11 @@ public class NotepadGUI extends JFrame {
     // file explorer
     private JFileChooser fileChooser;
     private JTextArea textArea;
+
+    public JTextArea getTextArea() {
+        return textArea;
+    }
+
     private File currentFile;
     // swing's build to manage undo and redo functionality
     private UndoManager undoManager;
@@ -117,11 +122,6 @@ public class NotepadGUI extends JFrame {
         alignTextMenu.add(alignTextRightMenuItem);
 
         formatMenu.add(alignTextMenu);
-
-        // font format
-        JMenuItem fontMenuItem = new JMenuItem("Font...");
-        formatMenu.add(fontMenuItem);
-
         return formatMenu;
     }
 
