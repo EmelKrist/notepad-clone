@@ -68,7 +68,33 @@ public class NotepadGUI extends JFrame {
         menuBar.add(addFileMenu());
         menuBar.add(addEditMenu());
         menuBar.add(addFormatMenu());
+        menuBar.add(addViewMenu());
         add(toolBar, BorderLayout.NORTH);
+    }
+
+    /**
+     * Method that adds a "View" menu in the toolbar
+     * with basic functionality items.
+     *
+     * @return toolbar menu
+     */
+    private JMenu addViewMenu() {
+        JMenu viewMenu = new JMenu("View");
+
+        JMenu zoomMenu = new JMenu("Zoom");
+        // zoom in functionality
+        JMenuItem zoomInMenuItem = new JMenuItem("Zoom in");
+        zoomMenu.add(zoomInMenuItem);
+        // zoom out functionality
+        JMenuItem zoomOutMenuItem = new JMenuItem("Zoom out");
+        zoomMenu.add(zoomOutMenuItem);
+        // restore default zoom
+        JMenuItem zoomRestoreMenuItem = new JMenuItem("Restore Default Zoom");
+        zoomMenu.add(zoomRestoreMenuItem);
+
+        viewMenu.add(zoomMenu);
+        return viewMenu;
+
     }
 
     /**
