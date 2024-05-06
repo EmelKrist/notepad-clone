@@ -8,6 +8,7 @@ import javax.swing.undo.UndoManager;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.*;
 import java.nio.channels.FileChannel;
 
@@ -35,6 +36,25 @@ public class NotepadGUI extends JFrame {
         // undo manager setup
         undoManager = new UndoManager();
         addGuiComponents();
+        addHotkeys();
+    }
+
+    /**
+     * Method that adds hotkeys.
+     */
+    private void addHotkeys() {
+        // save hotkey
+        // define the action to be performed when the hotkey is pressed
+        Action saveAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                saveFile();
+            }
+        };
+
+        // add the action to the frame's input map
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_MASK), "save");
+        getRootPane().getActionMap().put("save", saveAction);
     }
 
     /**
@@ -269,7 +289,6 @@ public class NotepadGUI extends JFrame {
         saveMenuItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // todo горячую клавишу для сохранения
                 saveFile();
             }
         });
