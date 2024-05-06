@@ -80,6 +80,16 @@ public class NotepadGUI extends JFrame {
         };
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_Y, KeyEvent.CTRL_MASK), "redo");
         getRootPane().getActionMap().put("redo", redoAction);
+
+        // new hotkey
+        Action newAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createNewFile();
+            }
+        };
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_MASK), "new");
+        getRootPane().getActionMap().put("new", newAction);
     }
 
     /**
